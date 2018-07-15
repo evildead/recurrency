@@ -8,6 +8,10 @@ var ratesSchema = new mongoose.Schema({
         default: Date.now,
         index: true
     },
+    dateStr: {
+        type: String,
+        default: '' // format yyyy-mm-dd
+    },
     rawdata: {
         type: String,
         default: ''

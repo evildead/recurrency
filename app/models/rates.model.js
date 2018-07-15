@@ -10,7 +10,8 @@ var ratesSchema = new mongoose.Schema({
     },
     dateStr: {
         type: String,
-        default: '' // format yyyy-mm-dd
+        default: '', // format yyyy-mm-dd
+        index: true
     },
     rawdata: {
         type: String,
@@ -23,7 +24,7 @@ var ratesSchema = new mongoose.Schema({
 });
 
 // add index
-ratesSchema.index({ createdOn: 1}, {unique: true});
+ratesSchema.index({createdOn: 1, dateStr: 1}, {unique: true});
 
 // create the model for rates and expose it to our app
 module.exports = mongoose.model('Rates', ratesSchema);

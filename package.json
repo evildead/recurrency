@@ -6,6 +6,10 @@
   "scripts": {
     "test": "mocha"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/evildead/recurrency.git"
+  },
   "author": "Danilo Carrabino",
   "license": "MIT",
   "dependencies": {

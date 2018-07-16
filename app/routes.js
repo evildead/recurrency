@@ -9,3 +9,5 @@ module.exports = router;
 router.get('/', mainController.getRecurrencyAPIDescription);
 
 router.get('/latest', ratesController.getLatestRates);
+
+router.get('/currencies', ratesController.getAvailableCurrencies);

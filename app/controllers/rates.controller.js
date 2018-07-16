@@ -10,7 +10,8 @@ const getEuroFxRef = require('../utilities').getEuroFxRef;
 const stdResponse = require('../utilities').stdResponse;
 
 module.exports = {
-    getLatestRates: getLatestRates
+    getLatestRates: getLatestRates,
+    getAvailableCurrencies: getAvailableCurrencies
 };
 
 function returnFilteredRates(ratesInJson, req, res) {
@@ -22,20 +23,56 @@ function returnFilteredRates(ratesInJson, req, res) {
     }
 }
 
+function returnAvailableCurrencies(ratesInJson, req, res) {
+    return stdResponse(null, Object.keys(ratesInJson), req, res);
+}
+
+/**
+ * function getAvailableCurrencies
+ * @param {*} req 
+ * @param {*} res 
+ */
+function getAvailableCurrencies(req, res) {
+    innerGetLatestRatesModel((err, rates) => {
+        if(err) {
+            return stdResponse(err, null, req, res);
+        }
+        else {
+            return returnAvailableCurrencies(JSON.parse(rates.ratesMap), req, res);    // return available currencies
+        }
+    });
+}
+
 /**
  * function getLatestRates
  * @param {*} req 
  * @param {*} res 
  */
 function getLatestRates(req, res) {
-    getLatestRatesFromDB((err, rates) => {
+    innerGetLatestRatesModel((err, rates) => {
         if(err) {
             return stdResponse(err, null, req, res);
         }
         else {
+            return returnFilteredRates(JSON.parse(rates.ratesMap), req, res);    // return filtered data
+        }
+    });
+}
+
+/**
+ * function innerGetLatestRatesModel
+ * 
+ * @param {*} callback(err, rates) where rates is an object of type ratesSchema 'Rates' 
+ */
+function innerGetLatestRatesModel(callback) {
+    getLatestRatesFromDB((err, rates) => {
+        if(err) {
+            return callback(err, null);
+        }
+        else {
             if((rates != null) && (dateComparedWithToday(rates.dateStr) == 0)) {
                 console.log("data from database");
-                returnFilteredRates(JSON.parse(rates.ratesMap), req, res);    // return filtered data
+                return callback(null, rates);
             }
             else {
                 console.log("data from web");
@@ -47,10 +84,10 @@ function getLatestRates(req, res) {
                     return saveRatesToDB(jsonRates);   // save JSON data rates to database
                 })
                 .then((ratesModelObj) => {
-                    returnFilteredRates(JSON.parse(ratesModelObj.ratesMap), req, res);   // return filtered data
+                    return callback(null, rates);
                 })
                 .catch((err) => {
-                    stdResponse(err, null, req, res);
+                    return callback(err, null);
                 });
             }
         }
@@ -132,26 +169,21 @@ function fromRawXmlToJsonRates(rawXml, callback = null) {
  * function getLatestRatesFromDB
  * @param {*} callback (err, rates) where rates can be null if no record exists
  *                     callback can be null
- * 
- * it returns a promise
  */
 function getLatestRatesFromDB(callback = null) {
-    return Rates.findOne({})
+    Rates.findOne({})
         .sort({'createdOn': 'desc'})
         .exec((err, rates) => {
             if(err) {
                 if(callback != null) {
-                    callback(err, null);
+                    return callback(err, null);
                 }
             }
             else {
                 if(callback != null) {
-                    callback(null, rates);
+                    return callback(null, rates);
                 }
             }
-        })
-        .catch((err) => {
-            //error, its handled now!
         });
 }
 

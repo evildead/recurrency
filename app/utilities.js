@@ -1,5 +1,13 @@
 const request = require('request');  // require request
 const uniqid = require('uniqid'); // require uniqueid
+const easyxml = require('easyxml'); // require easyxml
+
+const xmlSerializer = new easyxml({
+    singularize: true,
+    rootElement: 'response',
+    dateFormat: 'ISO',
+    manifest: true
+});
 
 module.exports = {
     stdResponse: stdResponse,
@@ -18,17 +26,31 @@ module.exports = {
  * @param {*} res 
  */
 function stdResponse(err, data, req, res) {
-    if(req.query.callback) {
-        res.jsonp({
-            'err': err,
-            'data': data
-        });
+    var objToReturn = {
+        'err': err,
+        'data': data
+    };
+
+    // check format query parameter: if it exists, it can be 'json' or 'xml'
+    if('format' in req.query && (typeof(req.query.format) === "string" || req.query.format instanceof String)) {
+        // check if format is xml
+        if(req.query.format.toString().toLowerCase() === 'xml') {
+            res.set('Content-Type', 'text/xml');
+            let xmlStr = xmlSerializer.render(objToReturn);
+            return res.send(xmlStr);
+        }
     }
+
+    // we're here if format is not set, or if format's value is not 'xml'
+    
+    // callback found -> return jsonp
+    if(req.query.callback) {
+        return res.jsonp(objToReturn);
+    }
+    // no callback found -> return json
     else {
-        res.json({
-            'err': err,
-            'data': data
-        });
+        res.set('Content-Type', 'application/json');
+        return res.json(objToReturn);
     }
 }
 
@@ -110,13 +132,13 @@ function getEuroFxRef(callback = null) {
         });
         r.get(uri, (err, res, body) => {
             if(err) {
-                if(callback != null) {
+                if(callback && typeof callback === 'function') {
                     callback(err, null);
                 }
                 reject(err);
             }
             else {
-                if(callback != null) {
+                if(callback && typeof callback === 'function') {
                     callback(null, body);
                 }
                 resolve(body);

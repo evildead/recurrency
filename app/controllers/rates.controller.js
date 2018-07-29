@@ -1,6 +1,6 @@
 const xml2js = require('xml2js');   // require xml2js
 
-// User model
+// Rates model
 const Rates = require('../models/rates.model');
 
 const getYearMonthDayFromDateObject = require('../utilities').getYearMonthDayFromDateObject;
@@ -15,8 +15,10 @@ module.exports = {
 };
 
 function returnFilteredRates(ratesInJson, req, res) {
-    if( (req.query.base) && (req.query.base in ratesInJson) ) {
-        return stdResponse(null, ratesInJson[req.query.base], req, res);
+    if( (req.query.base) &&
+        (typeof(req.query.base) === "string" || req.query.base instanceof String) &&
+        (req.query.base.toString().toUpperCase() in ratesInJson) ) {
+        return stdResponse(null, ratesInJson[req.query.base.toString().toUpperCase()], req, res);
     }
     else {
         return stdResponse(null, ratesInJson, req, res);

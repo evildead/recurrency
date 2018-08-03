@@ -82,11 +82,11 @@ function innerGetLatestRatesModel(callback) {
                 .then((rawXml) => {
                     return fromRawXmlToJsonRates(rawXml);   // get JSON data rates
                 })
-                .then((jsonRates) => {
-                    return saveRatesToDB(jsonRates);   // save JSON data rates to database
+                .then(([jsonRates, rawXml]) => {
+                    return saveRatesToDB(jsonRates, rawXml);   // save JSON data rates to database
                 })
                 .then((ratesModelObj) => {
-                    return callback(null, rates);
+                    return callback(null, ratesModelObj);
                 })
                 .catch((err) => {
                     return callback(err, null);
@@ -157,9 +157,9 @@ function fromRawXmlToJsonRates(rawXml, callback = null) {
                 }
                 
                 if(callback != null) {
-                    callback(null, theFinalRates);
+                    callback(null, theFinalRates, rawXml);
                 }
-                resolve(theFinalRates);
+                resolve([theFinalRates, rawXml]);
             }
         });
     });
@@ -202,7 +202,7 @@ function getLatestRatesFromDB(callback = null) {
 function saveRatesToDB(ratesInJson, rawXml, callback = null) {
     const newRates = new Rates();
     newRates.dateStr = getDateOfToday();
-    newRates.rawXml = rawXml;
+    newRates.rawdata = rawXml;
     newRates.ratesMap = JSON.stringify(ratesInJson);
 
     var innerPromise = new Promise((resolve, reject) => {

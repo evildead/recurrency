@@ -14,6 +14,11 @@ module.exports = {
     getAvailableCurrencies: getAvailableCurrencies
 };
 
+// export these methods only in test mode
+if((process.env.NODE_ENV) && (process.env.NODE_ENV == 'test')) {
+    module.exports.fromRawXmlToJsonRates = fromRawXmlToJsonRates;
+}
+
 function returnFilteredRates(ratesInJson, req, res) {
     if( (req.query.base) &&
         (typeof(req.query.base) === "string" || req.query.base instanceof String) &&
@@ -138,13 +143,13 @@ function fromRawXmlToJsonRates(rawXml, callback = null) {
                 for(let currName of Object.keys(eurRatesList)) {
                     let tmpRatesList = {};
                     
-                    let numEurRate = 1/eurRatesList[currName];
-                    tmpRatesList["EUR"] = numEurRate.toFixed(4);
+                    let numEurRate = 1.0/eurRatesList[currName];
+                    tmpRatesList["EUR"] = numEurRate/*.toFixed(4)*/;
                     for(let tmpCurrName of Object.keys(eurRatesList)) {
                         if(tmpCurrName != currName) {
                             // we calculate the rate between any couple of currencies by using the rates with EUR
                             let numRate = eurRatesList[tmpCurrName] / eurRatesList[currName];
-                            tmpRatesList[tmpCurrName] = numRate.toFixed(4);
+                            tmpRatesList[tmpCurrName] = numRate/*.toFixed(4)*/;
                         }
                     }
                     

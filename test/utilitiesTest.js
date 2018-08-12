@@ -1,3 +1,6 @@
+// Set NODE_ENV to test
+process.env.NODE_ENV = 'test';
+
 const xml2js = require('xml2js');   // require xml2js
 
 //Require the dev-dependencies

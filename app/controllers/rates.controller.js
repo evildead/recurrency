@@ -9,6 +9,8 @@ const dateComparedWithToday = require('../utilities').dateComparedWithToday;
 const getEuroFxRef = require('../utilities').getEuroFxRef;
 const stdResponse = require('../utilities').stdResponse;
 
+const latestRatesCache = [];
+
 module.exports = {
     getLatestRates: getLatestRates,
     getAvailableCurrencies: getAvailableCurrencies
@@ -72,6 +74,12 @@ function getLatestRates(req, res) {
  * @param {*} callback(err, rates) where rates is an object of type ratesSchema 'Rates' 
  */
 function innerGetLatestRatesModel(callback) {
+    // Check cache first
+    if((latestRatesCache.length > 0) && (dateComparedWithToday(latestRatesCache[0].dateStr) == 0)) {
+        console.log('data from cache');
+        return process.nextTick(callback.bind(null, null, latestRatesCache[0]));
+    }
+    // Then check the database
     getLatestRatesFromDB((err, rates) => {
         if(err) {
             return callback(err, null);
@@ -79,6 +87,11 @@ function innerGetLatestRatesModel(callback) {
         else {
             if((rates != null) && (dateComparedWithToday(rates.dateStr) == 0)) {
                 console.log("data from database");
+                
+                // update cache
+                latestRatesCache.splice(0, latestRatesCache.length);
+                latestRatesCache.push(rates);
+
                 return callback(null, rates);
             }
             else {
@@ -222,6 +235,11 @@ function saveRatesToDB(ratesInJson, rawXml, callback = null) {
                 if(callback != null) {
                     callback(null, newRates);
                 }
+                
+                // update cache
+                latestRatesCache.splice(0, latestRatesCache.length);
+                latestRatesCache.push(newRates);
+
                 resolve(newRates);
             }
         });

@@ -14,20 +14,20 @@
   "author": "Danilo Carrabino",
   "license": "MIT",
   "dependencies": {
-    "body-parser": "^1.18.3",
-    "cors": "^2.8.4",
-    "dotenv": "^6.0.0",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "dotenv": "^6.2.0",
     "easyxml": "^2.0.1",
-    "express": "^4.16.3",
-    "fs-extra": "^7.0.0",
-    "mongoose": "^5.2.3",
-    "request": "^2.87.0",
+    "express": "^4.16.4",
+    "fs-extra": "^7.0.1",
+    "mongoose": "^5.5.7",
+    "request": "^2.88.0",
     "uniqid": "^5.0.3",
     "xml2js": "^0.4.19"
   },
   "devDependencies": {
-    "chai": "^4.1.2",
-    "chai-http": "^4.0.0",
+    "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
     "mocha": "^5.2.0"
   }
 }

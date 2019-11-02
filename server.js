@@ -17,7 +17,10 @@ app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 
 // connect to the database
-mongoose.connect(process.env.DB_URI);
+mongoose.connect(process.env.DB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+});
 
 app.use(require('./app/routes'));
 

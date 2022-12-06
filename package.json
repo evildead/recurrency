@@ -14,11 +14,11 @@
   "author": "Danilo Carrabino",
   "license": "MIT",
   "dependencies": {
-    "body-parser": "^1.19.0",
+    "body-parser": "^1.20.1",
     "cors": "^2.8.5",
     "dotenv": "^6.2.0",
     "easyxml": "^2.0.1",
-    "express": "^4.16.4",
+    "express": "^4.18.2",
     "fs-extra": "^7.0.1",
     "mongoose": "^5.7.7",
     "request": "^2.88.0",
